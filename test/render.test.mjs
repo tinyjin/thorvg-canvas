@@ -135,3 +135,15 @@ test('renders in worker_threads concurrently', async () => {
   const results = await Promise.all([run(10), run(20), run(30), run(40)]);
   assert.deepEqual(results, [[10, 0, 0, 255], [20, 0, 0, 255], [30, 0, 0, 255], [40, 0, 0, 255]]);
 });
+
+test('the default font is available without Font.load()', () => {
+  const canvas = new TVG.Canvas({ width: 120, height: 40 });
+  const text = new TVG.Text().font('default').fontSize(24).text('ThorVG').fill(0, 0, 0);
+  text.translate(4, 4);
+  canvas.add(text).render();
+  const { data } = canvas.getImageData();
+  let inked = 0;
+  for (let i = 3; i < data.length; i += 4) if (data[i] > 0) inked++;
+  assert.ok(inked > 100, `expected glyph pixels, got ${inked}`);
+  canvas.destroy();
+});

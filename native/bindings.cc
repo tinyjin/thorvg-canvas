@@ -13,6 +13,9 @@
 #include "handle.h"
 #include "marshal.h"
 
+#define THORVG_TTF_LOADER_SUPPORT 1
+#include "default_font.h"
+
 namespace thorvg::node {
 
 namespace {
@@ -211,7 +214,10 @@ void installEngine(Builder& b) {
     // finalizer that runs during env teardown can still free into a live engine.
     static std::once_flag once;
     auto threads = arg<uint32_t>(info, 0);
-    std::call_once(once, [threads] { tvg_engine_init(threads); });
+    std::call_once(once, [threads] {
+      tvg_engine_init(threads);
+      tvg_font_load_data("default", requestFont(), DEFAULT_FONT_SIZE, "ttf", false);
+    });
     return info.Env().Undefined();
   });
 
