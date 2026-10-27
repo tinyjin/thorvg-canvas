@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="872" viewBox="0 0 920 872" font-family="Inter, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif" font-weight="600">
+  <rect width="920" height="872" fill="#f2f2f2"/>
+
+  <g fill="none" stroke="#111" stroke-width="3" stroke-dasharray="8 6">
+    <rect x="215" y="60" width="640" height="96"/>
+    <rect x="215" y="196" width="640" height="96"/>
+    <rect x="215" y="332" width="640" height="96"/>
+    <rect x="215" y="468" width="640" height="96"/>
+    <rect x="215" y="604" width="640" height="96"/>
+    <rect x="215" y="740" width="640" height="96"/>
+  </g>
+
+  <g fill="#111">
+    <rect x="531" y="156" width="8" height="40"/>
+    <rect x="531" y="292" width="8" height="40"/>
+    <rect x="531" y="428" width="8" height="40"/>
+    <rect x="531" y="564" width="8" height="40"/>
+    <rect x="531" y="700" width="8" height="40"/>
+  </g>
+
+  <g fill="#333" font-size="22" text-anchor="middle">
+    <text x="120" y="116">Runtime</text>
+    <text x="120" y="252">Interface</text>
+    <text x="120" y="388">Bindings</text>
+    <text x="120" y="524">Engine</text>
+    <text x="120" y="648">Render</text>
+    <text x="120" y="680">Backend</text>
+    <text x="120" y="796">Output</text>
+  </g>
+
+  <g fill="#fff" stroke="#111" stroke-width="3">
+    <rect x="223" y="68" width="624" height="80"/>
+    <rect x="223" y="204" width="624" height="80"/>
+    <rect x="223" y="340" width="308" height="80"/>
+    <rect x="539" y="340" width="308" height="80"/>
+    <rect x="223" y="476" width="624" height="80"/>
+    <rect x="223" y="612" width="624" height="80"/>
+    <rect x="223" y="748" width="202" height="80"/>
+    <rect x="434" y="748" width="203" height="80"/>
+    <rect x="646" y="748" width="201" height="80"/>
+  </g>
+
+  <g fill="#111">
+    <rect x="690" y="92" width="136" height="32" rx="16"/>
+    <rect x="424" y="364" width="90" height="32" rx="16"/>
+    <rect x="760" y="364" width="70" height="32" rx="16"/>
+  </g>
+  <g fill="#fff" font-size="15" font-weight="700" text-anchor="middle">
+    <text x="758" y="113">NODE.JS</text>
+    <text x="469" y="385">NATIVE</text>
+    <text x="795" y="385">LIBUV</text>
+  </g>
+
+  <g fill="#111" font-size="24">
+    <text x="255" y="117">JavaScript/TypeScript</text>
+    <text x="245" y="389">N-API Binding</text>
+    <text x="555" y="389">Thread Pool</text>
+  </g>
+
+  <g fill="#111" text-anchor="middle">
+    <text x="535" y="253" font-size="24">WebCanvas API</text>
+    <text x="535" y="526" font-size="28">ThorVG Engine</text>
+
+    <text x="535" y="646" font-size="24">CPU</text>
+    <text x="535" y="674" font-size="16" font-weight="500">Software rasterizer · SIMD (NEON / AVX)</text>
+
+    <text x="324" y="780" font-size="22">Memory</text>
+    <text x="324" y="808" font-size="15" font-weight="500">getImageData() · RGBA</text>
+    <text x="535" y="780" font-size="22">Buffer</text>
+    <text x="535" y="808" font-size="15" font-weight="500">toBuffer() · PNG · raw</text>
+    <text x="746" y="780" font-size="22">File</text>
+    <text x="746" y="808" font-size="15" font-weight="500">toFile()</text>
+  </g>
+</svg>

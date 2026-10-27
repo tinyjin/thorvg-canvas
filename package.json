@@ -1,0 +1,59 @@
+{
+  "name": "thorvg-canvas",
+  "version": "0.0.0",
+  "description": "Headless vector graphics and Lottie rendering for Node.js.",
+  "keywords": [
+    "node",
+    "headless",
+    "thorvg",
+    "lottie",
+    "svg",
+    "vector-graphics",
+    "canvas",
+    "server-side-rendering",
+    "animation"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.map",
+    "prebuilds"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:thorvg": "./scripts/build-thorvg.sh",
+    "build:native": "node-gyp rebuild",
+    "build:ts": "tsup",
+    "build": "yarn build:thorvg && yarn build:native && yarn build:ts",
+    "generate": "node scripts/generate-constants.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --expose-gc test/*.test.mjs",
+    "prepack": "node scripts/check-prebuilds.mjs && yarn build:ts"
+  },
+  "dependencies": {
+    "@thorvg/webcanvas": "~1.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "node-addon-api": "^8.3.0",
+    "node-gyp": "^12.4.0",
+    "pixelmatch": "^7.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0"
+  },
+  "packageManager": "yarn@4.9.2"
+}
