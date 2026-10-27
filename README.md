@@ -47,6 +47,7 @@ yarn install
 yarn build        # build:thorvg → build:native → build:ts
 yarn typecheck    # includes the webcanvas parity check
 yarn test
+yarn test:visual  # pixel comparison against @thorvg/webcanvas
 ```
 
 Note: Requires meson, ninja and a C++17 toolchain.

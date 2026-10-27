@@ -5,3 +5,4 @@ dist/
 *.log
 deps/
 prebuilds/
+test/visual/output/

@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>webcanvas reference</title>
+<script type="module">
+  import ThorVG from '/webcanvas/webcanvas.esm.js';
+  import { ASSETS, cases, renderCase } from '/visual/cases.js';
+
+  // webcanvas' sw renderer hands every frame to putImageData as the exact RGBA it
+  // produced. Reading it back from the 2D canvas instead would round-trip through
+  // premultiplied storage and lose precision on translucent pixels.
+  const frames = new WeakMap();
+  const putImageData = CanvasRenderingContext2D.prototype.putImageData;
+  CanvasRenderingContext2D.prototype.putImageData = function (imageData, ...rest) {
+    frames.set(this.canvas, new Uint8Array(imageData.data));
+    return putImageData.call(this, imageData, ...rest);
+  };
+
+  function toBase64(bytes) {
+    let binary = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(binary);
+  }
+
+  window.renderAll = async () => {
+    const TVG = await ThorVG.init({ renderer: 'sw', locateFile: (path) => `/webcanvas/${path}` });
+
+    const assets = {};
+    for (const [name, kind] of Object.entries(ASSETS)) {
+      const response = await fetch(`/resources/${name}`);
+      assets[name] = kind === 'text' ? await response.text() : new Uint8Array(await response.arrayBuffer());
+    }
+
+    const results = {};
+    for (const name of Object.keys(cases)) {
+      const element = document.createElement('canvas');
+      document.body.append(element);
+      try {
+        const canvas = renderCase(TVG, name, element, assets);
+        results[name] = { data: toBase64(frames.get(element)) };
+        canvas.destroy();
+      } catch (error) {
+        results[name] = { error: String(error?.stack ?? error) };
+      }
+      element.remove();
+    }
+    return { version: TVG.version, results };
+  };
+</script>

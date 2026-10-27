@@ -72,3 +72,24 @@ jobs:
           name: prebuild-${{ matrix.target }}
           path: build/Release/thorvg.node
           if-no-files-found: error
+
+  visual:
+    name: visual parity
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: pip install meson ninja
+      - run: corepack enable && yarn install --immutable
+      - run: yarn build
+      - run: npx playwright install --with-deps chromium-headless-shell
+      - run: yarn test:visual
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: visual-report
+          path: test/visual/output
