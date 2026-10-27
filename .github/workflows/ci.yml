@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # release.yml reuses this matrix and publishes its artifacts.
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { target: darwin-arm64, os: macos-15 }
+          - { target: darwin-x64, os: macos-15-intel }
+          # glibc 2.28 baseline: runs on Debian 10+, Ubuntu 20.04+, RHEL 8+, Amazon Linux 2023,
+          # which is also the floor Node 20+ itself requires.
+          - { target: linux-x64-gnu, os: ubuntu-24.04, container: 'quay.io/pypa/manylinux_2_28_x86_64' }
+          - { target: linux-arm64-gnu, os: ubuntu-24.04-arm, container: 'quay.io/pypa/manylinux_2_28_aarch64' }
+          - { target: linux-x64-musl, os: ubuntu-24.04, container: 'node:24-alpine' }
+          - { target: linux-arm64-musl, os: ubuntu-24.04-arm, container: 'node:24-alpine' }
+          - { target: win32-x64, os: windows-2025 }
+          - { target: win32-arm64, os: windows-11-arm }
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install toolchain (alpine)
+        if: endsWith(matrix.target, '-musl')
+        # Alpine has no bash until this step installs it.
+        shell: sh
+        run: apk add --no-cache bash git python3 py3-pip make g++ meson ninja-build
+      - name: Install toolchain (manylinux)
+        if: endsWith(matrix.target, '-gnu')
+        run: pipx install meson && pipx install ninja
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-node@v4
+        if: ${{ !matrix.container || endsWith(matrix.target, '-gnu') }}
+        with:
+          node-version: 24
+      - name: Install meson (macOS, Windows)
+        if: ${{ !matrix.container }}
+        run: pip install meson ninja
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: startsWith(matrix.target, 'win32')
+        with:
+          arch: ${{ endsWith(matrix.target, 'arm64') && 'arm64' || 'x64' }}
+
+      - run: corepack enable && yarn install --immutable
+      - run: yarn build
+      - run: yarn typecheck
+      - run: yarn test
+
+      - name: Show linked libraries
+        if: startsWith(matrix.target, 'linux')
+        run: ldd build/Release/thorvg.node || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prebuild-${{ matrix.target }}
+          path: build/Release/thorvg.node
+          if-no-files-found: error
