@@ -17,7 +17,7 @@ export const ASSETS = {
   'rawimage_200x300.raw': 'binary',
   'PublicSans-Regular.ttf': 'binary',
   'test.lot': 'text',
-  'test4.lot': 'text',
+  'test5.lot': 'text',
   'test11.lot': 'text',
   'segment.lot': 'text',
   'test10.lot': 'text',
@@ -386,11 +386,11 @@ export const cases = {
   },
 
   'picture/paint-lookup'(TVG, canvas, assets) {
-    const animation = new TVG.LottieAnimation().load(assets['test4.lot']);
+    const animation = new TVG.LottieAnimation().load(assets['test11.lot']);
     canvas.add(fit(animation.picture));
     animation.frame(40);
-    animation.picture.paint('Rectangle 1').visible(false);
-    animation.picture.paint('Rectangle 2').opacity(90);
+    animation.picture.paint('Shape Layer from test28').visible(false);
+    animation.picture.paint('Shape Layer from test30').opacity(90);
   },
 
   // --- Accessor -------------------------------------------------------------
@@ -454,7 +454,7 @@ export const cases = {
   },
 
   'lottie/mid-frame'(TVG, canvas, assets) {
-    const animation = new TVG.LottieAnimation().load(assets['test4.lot']);
+    const animation = new TVG.LottieAnimation().load(assets['test5.lot']);
     canvas.add(fit(animation.picture));
     animation.frame(animation.info().totalFrames / 2);
   },
