@@ -6,6 +6,10 @@ on:
   pull_request:
   # release.yml reuses this matrix and publishes its artifacts.
   workflow_call:
+    inputs:
+      release_tag:
+        type: string
+        required: false
 
 permissions:
   contents: read
@@ -24,11 +28,14 @@ jobs:
           - { target: linux-x64-gnu, os: ubuntu-24.04, container: 'quay.io/pypa/manylinux_2_28_x86_64' }
           - { target: linux-arm64-gnu, os: ubuntu-24.04-arm, container: 'quay.io/pypa/manylinux_2_28_aarch64' }
           - { target: linux-x64-musl, os: ubuntu-24.04, container: 'node:24-alpine' }
-          - { target: linux-arm64-musl, os: ubuntu-24.04-arm, container: 'node:24-alpine' }
+          # No JS actions in Alpine containers on arm64 runners.
+          - { target: linux-arm64-musl, os: ubuntu-24.04-arm, container: 'node:24-alpine', shell-only: true }
           - { target: win32-x64, os: windows-2025 }
           - { target: win32-arm64, os: windows-11-arm }
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
+    permissions:
+      contents: write
     defaults:
       run:
         shell: bash
@@ -37,14 +44,26 @@ jobs:
         if: endsWith(matrix.target, '-musl')
         # Alpine has no bash until this step installs it.
         shell: sh
-        run: apk add --no-cache bash git python3 py3-pip make g++ meson ninja-build
+        run: apk add --no-cache bash git github-cli python3 py3-pip make g++ meson ninja-build
       - name: Install toolchain (manylinux)
         if: endsWith(matrix.target, '-gnu')
         run: pipx install meson && pipx install ninja
 
       - uses: actions/checkout@v4
+        if: ${{ !matrix.shell-only }}
         with:
           submodules: true
+      - name: Checkout (shell)
+        if: ${{ matrix.shell-only }}
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          git config --global --add safe.directory '*'
+          git init -q .
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}"
+          git fetch -q --depth 1 origin "${{ github.sha }}"
+          git checkout -q FETCH_HEAD
+          git submodule update -q --init --depth 1
 
       - uses: actions/setup-node@v4
         if: ${{ !matrix.container || endsWith(matrix.target, '-gnu') }}
@@ -68,10 +87,19 @@ jobs:
         run: ldd build/Release/thorvg.node || true
 
       - uses: actions/upload-artifact@v4
+        if: ${{ !matrix.shell-only }}
         with:
           name: prebuild-${{ matrix.target }}
           path: build/Release/thorvg.node
           if-no-files-found: error
+      - name: Upload to the draft release (shell)
+        if: ${{ matrix.shell-only && inputs.release_tag }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp build/Release/thorvg.node "prebuild-${{ matrix.target }}.node"
+          gh release upload "${{ inputs.release_tag }}" "prebuild-${{ matrix.target }}.node" \
+            --clobber -R "${{ github.repository }}"
 
   visual:
     name: visual parity

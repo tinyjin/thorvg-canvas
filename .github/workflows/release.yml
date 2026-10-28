@@ -17,8 +17,24 @@ permissions:
   contents: read
 
 jobs:
+  draft:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" > /dev/null 2>&1 ||
+            gh release create "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --draft --verify-tag --title "$GITHUB_REF_NAME"
+
   build:
+    needs: draft
     uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: write
+    with:
+      release_tag: ${{ github.ref_name }}
 
   publish:
     needs: build
@@ -27,7 +43,7 @@ jobs:
     # settings so a stray tag cannot publish without approval.
     environment: npm
     permissions:
-      contents: read
+      contents: write
       id-token: write # OIDC token for npm Trusted Publishing (and provenance)
     steps:
       - uses: actions/checkout@v4
@@ -54,11 +70,20 @@ jobs:
           path: artifacts
 
       - name: Collect prebuilds
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           for dir in artifacts/prebuild-*; do
             target="${dir#artifacts/prebuild-}"
             mkdir -p "prebuilds/$target"
             cp "$dir/thorvg.node" "prebuilds/$target/thorvg.node"
+          done
+          gh release download "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" -p 'prebuild-*.node' -D release-assets
+          for file in release-assets/prebuild-*.node; do
+            target="$(basename "$file" .node)"
+            target="${target#prebuild-}"
+            mkdir -p "prebuilds/$target"
+            cp "$file" "prebuilds/$target/thorvg.node"
           done
 
       - run: corepack enable && yarn install --immutable
@@ -68,3 +93,8 @@ jobs:
         env:
           # Only for the first release (see the top of this file); empty afterwards.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --draft=false
