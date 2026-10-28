@@ -1,0 +1,56 @@
+---
+title: Assets
+sidebar_position: 3
+---
+
+The `load()` methods take the file content, not a path. Read files with `node:fs`. A `Buffer` is a `Uint8Array`, so it can be passed directly.
+
+## SVG and images
+
+```ts
+import { readFileSync } from 'node:fs';
+
+const svg = new TVG.Picture().load(readFileSync('logo.svg'));
+const photo = new TVG.Picture().load(readFileSync('photo.png'), { type: 'png' });
+```
+
+`type` defaults to `'svg'`. `'png'`, `'jpg'` and `'webp'` load images. `'raw'` loads pixels with `width` and `height`.
+
+After loading, `size()` returns the size of the picture, and `size(width, height)` scales it:
+
+```ts
+const { width, height } = svg.size();
+svg.size(width * 2, height * 2);
+```
+
+## Lottie
+
+```ts
+const animation = new TVG.LottieAnimation().load(readFileSync('animation.json'));
+```
+
+See [Lottie](./lottie) for frames and playback.
+
+## Fonts
+
+```ts
+TVG.Font.load('Inter', readFileSync('Inter.ttf'), { type: 'ttf' });
+```
+
+See [Text and fonts](./text).
+
+## Asset resolver
+
+SVG and Lottie files can refer to other files, such as images. `resolver()` loads them:
+
+```ts
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+picture.resolver((paint, src) => {
+  paint.load(readFileSync(join('assets', src)), { type: 'png' });
+  return true;
+});
+```
+
+Return `true` when the asset was loaded. Set the resolver before `load()`.

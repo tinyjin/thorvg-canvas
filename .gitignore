@@ -7,3 +7,6 @@ deps/
 prebuilds/
 test/visual/output/
 examples/*.png
+docs/.docusaurus/
+docs/static/examples/
+docs/src/data/

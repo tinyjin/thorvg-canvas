@@ -1,0 +1,54 @@
+---
+title: Canvas
+sidebar_position: 1
+---
+
+`new TVG.Canvas(options)` creates a canvas that renders into memory.
+
+```ts
+const canvas = new TVG.Canvas({ width: 600, height: 400 });
+canvas.add(shape).render();
+await canvas.toFile('out.png');
+canvas.destroy();
+```
+
+`TVG.Canvas` is the WebCanvas [`Canvas`](https://thorvg.github.io/thorvg.web/classes/Canvas.html) class. It has the same methods: `add`, `remove`, `clear`, `update`, `render`, `resize`, `viewport` and `destroy`, plus the `renderer` and `dpr` getters. The [output methods](./output) and [`renderAsync()`](./threads) are added for Node.js.
+
+## Size
+
+`width` and `height` set the drawing size, in the units you draw in. They default to 800 × 600, as in WebCanvas. `resize(width, height)` changes them later.
+
+## Pixel ratio
+
+There is no screen in Node.js, so `enableDevicePixelRatio` has no effect. Set `pixelRatio` instead to render at a higher resolution while drawing in the same units:
+
+```ts
+const canvas = new TVG.Canvas({ width: 300, height: 200, pixelRatio: 2 });
+canvas.width; // 600
+canvas.height; // 400
+canvas.dpr; // 2
+```
+
+`canvas.width` and `canvas.height` are the output size in pixels, `width × pixelRatio` and `height × pixelRatio`.
+
+## Rendering
+
+`render()` draws the scene into the canvas buffer. After changing paints that are already on the canvas, call `update()` first, as in WebCanvas:
+
+```ts
+shape.translate(10, 0);
+canvas.update().render();
+```
+
+The buffer keeps the last rendered frame until the next `render()`. The output methods read it.
+
+## Lifecycle
+
+- Call `destroy()` when the canvas is no longer used. It frees the pixel buffer and the paints on the canvas.
+- A canvas is also disposable, so `using` destroys it at the end of the scope:
+
+```ts
+using canvas = new TVG.Canvas({ width: 200, height: 200 });
+```
+
+- For WebCanvas compatibility, the constructor also takes a target as its first argument, `new TVG.Canvas(target, options)`. The target is ignored.

@@ -1,0 +1,58 @@
+---
+title: Lottie
+sidebar_position: 4
+---
+
+ThorVG includes a Lottie runtime, so Lottie animations render without another package.
+
+```ts
+import { readFileSync } from 'node:fs';
+
+const canvas = new TVG.Canvas({ width: 512, height: 512 });
+const animation = new TVG.LottieAnimation().load(readFileSync('animation.json'));
+
+const picture = animation.picture!;
+picture.size(512, 512);
+canvas.add(picture);
+
+const { totalFrames } = animation.info()!;
+for (let frame = 0; frame < totalFrames; frame++) {
+  animation.frame(frame);
+  await canvas.update().renderAsync();
+  await canvas.toFile(`frame-${String(frame).padStart(4, '0')}.png`);
+}
+```
+
+`load()` takes the Lottie JSON as a string or as UTF-8 bytes. After loading, `info()` returns the total frames, the duration and the frame rate.
+
+## Frames
+
+Set the frame with `frame(n)` and render. Frames can be fractional, and rendering is as fast as the CPU allows, not tied to the frame rate. Convert a time to a frame with the frame rate:
+
+```ts
+const { fps } = animation.info()!;
+animation.frame(1.5 * fps); // 1.5 seconds in
+```
+
+`play()` also works in Node.js. It advances the frame on a 60 Hz timer, which is useful only for real-time output such as streaming. For files, use `frame(n)`.
+
+## Segments and markers
+
+`segment(begin, end)` and `segment(marker)` limit the animation to a frame range or a marker. `markersCnt()` and `marker(index)` read the markers of the animation.
+
+## Slots
+
+`gen()` creates a slot from slot JSON, `apply()` applies it and `del()` removes it:
+
+```ts
+const id = animation.gen(slotJson);
+animation.apply(id);
+```
+
+## Quality
+
+`quality(value)` sets the rendering quality of effects such as blurs and shadows, from 0 to 100.
+
+## Audio
+
+Lottie audio layers are reported to `resolver()` with the source, offset, volume and whether the layer is active. There is no audio playback.

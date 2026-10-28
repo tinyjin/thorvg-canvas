@@ -2,6 +2,8 @@
 
 Headless vector graphics and Lottie rendering powered by [ThorVG](https://github.com/thorvg/thorvg).
 
+**[Documentation](https://tinyjin.github.io/thorvg-canvas/)**
+
 ## Installation
 
 ```sh
@@ -35,7 +37,7 @@ same classes run on the native ThorVG engine through [Node-API](https://nodejs.o
 on the CPU into memory.
 
 <p align="center">
-  <img width="600" src="docs/architecture.svg" alt="thorvg-canvas architecture">
+  <img width="600" src="docs/static/img/architecture.svg" alt="thorvg-canvas architecture">
 </p>
 
 
@@ -48,6 +50,7 @@ yarn build        # build:thorvg → build:native → build:ts
 yarn typecheck    # includes the webcanvas parity check
 yarn test
 yarn test:visual  # pixel comparison against @thorvg/webcanvas
+yarn docs         # documentation dev server
 ```
 
 Note: Requires meson, ninja and a C++17 toolchain.

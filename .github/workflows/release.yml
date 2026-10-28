@@ -86,7 +86,7 @@ jobs:
             cp "$file" "prebuilds/$target/thorvg.node"
           done
 
-      - run: corepack enable && yarn install --immutable
+      - run: corepack enable && yarn workspaces focus thorvg-canvas
 
       # prepack refuses to pack unless all eight prebuilds are present.
       - run: npm publish --access public
@@ -98,3 +98,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release edit "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --draft=false
+
+  docs:
+    needs: publish
+    uses: ./.github/workflows/docs.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

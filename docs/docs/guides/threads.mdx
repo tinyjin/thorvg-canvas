@@ -1,0 +1,45 @@
+---
+title: Threads
+sidebar_position: 6
+---
+
+## `renderAsync()`
+
+`render()` blocks the event loop while it draws. `renderAsync()` draws on the libuv thread pool instead and resolves when the frame is ready:
+
+```ts
+await canvas.update().renderAsync();
+await canvas.toFile('frame.png');
+```
+
+Use it in servers, so that other requests are handled while a frame renders.
+
+Until the promise settles, the scene must not change. Any other ThorVG call in the same thread throws until then, so await each `renderAsync()` before the next call.
+
+## Worker threads
+
+To render several frames in parallel, use [worker threads](https://nodejs.org/api/worker_threads.html). Each worker calls `init()` and creates its own canvases and paints:
+
+```ts title="worker.mjs"
+import { parentPort, workerData } from 'node:worker_threads';
+import { initSync } from 'thorvg-canvas';
+
+const TVG = initSync();
+const canvas = new TVG.Canvas({ width: 512, height: 512 });
+// draw workerData.frame
+canvas.render();
+parentPort.postMessage(canvas.toBufferSync('png'));
+canvas.destroy();
+```
+
+Objects cannot be shared between workers. Send the input, such as file content or a frame number, and receive the output, such as a PNG buffer.
+
+## Engine threads
+
+`init({ threads })` lets ThorVG split the rendering of a frame across its own threads. It defaults to `0`, which renders on one thread:
+
+```ts
+const TVG = await init({ threads: 4 });
+```
+
+It applies to the first `init()` of the process.

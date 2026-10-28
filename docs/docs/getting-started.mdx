@@ -1,0 +1,47 @@
+---
+title: Getting started
+slug: /getting-started
+sidebar_position: 1
+---
+
+`thorvg-canvas` brings [ThorVG](https://github.com/thorvg/thorvg) vector graphics and Lottie to Node.js. It renders headless on the CPU, into memory, and saves the result as PNG or raw pixels.
+
+Drawing uses the [`@thorvg/webcanvas`](https://www.npmjs.com/package/@thorvg/webcanvas) API, so code written for the browser runs in Node.js as is.
+
+## Requirements
+
+- Node.js 20+
+- macOS 11+, Linux (glibc 2.28+ or musl) or Windows, on x64 or arm64
+
+## Installation
+
+```sh
+npm install thorvg-canvas
+```
+
+The package includes prebuilt binaries for every supported platform. Nothing is compiled or downloaded on install.
+
+## Your first canvas
+
+```ts
+import { init } from 'thorvg-canvas';
+
+const TVG = await init();
+const canvas = new TVG.Canvas({ width: 200, height: 160 });
+
+const shape = new TVG.Shape();
+shape.appendRect(20, 20, 160, 120, { rx: 16, ry: 16 }).fill(37, 99, 235, 255);
+
+canvas.add(shape).render();
+await canvas.toFile('rect.png');
+canvas.destroy();
+```
+
+`init()` loads ThorVG and returns the ThorVG namespace (`TVG`). `TVG.Canvas` is the WebCanvas `Canvas` without an HTML canvas element: it draws into memory, and [`toFile()`](./guides/output) saves the last rendered frame.
+
+## Next steps
+
+- [Canvas](./guides/canvas) explains sizing, the pixel ratio and the lifecycle.
+- [Output](./guides/output) saves frames as files, buffers or raw pixels.
+- [Assets](./guides/assets) loads SVG, images, Lottie and fonts from files.
+- [Examples](./examples) shows complete scripts with the images they produce.

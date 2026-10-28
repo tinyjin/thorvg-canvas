@@ -77,7 +77,7 @@ jobs:
         with:
           arch: ${{ endsWith(matrix.target, 'arm64') && 'arm64' || 'x64' }}
 
-      - run: corepack enable && yarn install --immutable
+      - run: corepack enable && yarn workspaces focus thorvg-canvas
       - run: yarn build
       - run: yarn typecheck
       - run: yarn test
@@ -112,7 +112,7 @@ jobs:
         with:
           node-version: 24
       - run: pip install meson ninja
-      - run: corepack enable && yarn install --immutable
+      - run: corepack enable && yarn workspaces focus thorvg-canvas
       - run: yarn build
       - run: npx playwright install --with-deps chromium-headless-shell
       - run: yarn test:visual

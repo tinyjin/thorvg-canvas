@@ -1,0 +1,52 @@
+---
+title: Output
+sidebar_position: 2
+---
+
+The output methods read the last rendered frame. Call `render()` or `renderAsync()` before them.
+
+## Files
+
+```ts
+await canvas.toFile('frame.png');
+canvas.toFileSync('frame.png');
+```
+
+The format comes from the extension: `.png` or `.raw`. Pass it as the second argument to use another extension:
+
+```ts
+await canvas.toFile('frame.bin', 'raw');
+```
+
+## Buffers
+
+```ts
+const png = await canvas.toBuffer(); // 'png' by default
+const raw = canvas.toBufferSync('raw');
+```
+
+`toBuffer()` compresses PNG on the libuv thread pool. `toBufferSync()` and `toFileSync()` block until it is done.
+
+## Pixels
+
+```ts
+const { data, width, height } = canvas.getImageData();
+```
+
+`data` is a copy of the frame as RGBA, 4 bytes per pixel, row by row, with straight alpha. It has the same layout as the `data` of a browser `ImageData`, so it can be passed to other image libraries:
+
+```ts
+import sharp from 'sharp';
+
+const { data, width, height } = canvas.getImageData();
+await sharp(data, { raw: { width, height, channels: 4 } }).webp().toFile('frame.webp');
+```
+
+## Formats
+
+| Format | Content |
+| --- | --- |
+| `'png'` | 8-bit RGBA PNG |
+| `'raw'` | The same bytes as `getImageData().data` |
+
+For other formats, encode the pixels with an image library as shown above.

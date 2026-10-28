@@ -1,0 +1,25 @@
+---
+title: Overview
+sidebar_position: 0
+---
+
+The package runs the [`@thorvg/webcanvas`](https://www.npmjs.com/package/@thorvg/webcanvas) API in Node.js. The classes and methods are the same as in the browser.
+
+![thorvg-canvas architecture](/img/architecture.svg)
+
+## Layers
+
+| Layer | Role |
+| --- | --- |
+| Runtime | Node.js. Your script calls `init()`, the classes and the [output methods](./output) |
+| Interface | The WebCanvas API. `Shape`, `Scene`, `Picture`, `Text`, `LottieAnimation` and the other classes, with the same methods as in the browser |
+| Bindings | A native addon that calls the ThorVG C API through [Node-API](https://nodejs.org/api/n-api.html) |
+| Engine | ThorVG, which builds the scene and renders it |
+| Render backend | The CPU renderer (`'sw'`) |
+| Surface | A pixel buffer in memory, read with `getImageData()` or saved with `toFile()` |
+
+## Native
+
+ThorVG is compiled into the addon and called directly, without WebAssembly. Paints are ThorVG objects held by JavaScript and released when they are garbage collected or disposed.
+
+`render()` runs on the calling thread. [`renderAsync()`](./threads) runs on the libuv thread pool and keeps the event loop free.

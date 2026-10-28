@@ -1,0 +1,104 @@
+---
+title: API
+sidebar_position: 3
+---
+
+import WebCanvasVersion from '@site/src/components/WebCanvasVersion';
+
+The classes, enums and their methods are the [`@thorvg/webcanvas` API](https://thorvg.github.io/thorvg.web/). This page covers Node.js specific APIs.
+
+:::note
+This package follows `@thorvg/webcanvas` <WebCanvasVersion />. The WebCanvas reference describes the latest release, which can include APIs that <WebCanvasVersion /> does not have yet.
+:::
+
+## `init(options?)`
+
+```ts
+function init(options?: InitOptions): Promise<ThorVG>;
+```
+
+Loads the native addon, starts ThorVG and returns the ThorVG namespace. Later calls return the same namespace.
+
+## `initSync(options?)`
+
+```ts
+function initSync(options?: InitOptions): ThorVG;
+```
+
+`init()` without the promise, for scripts and workers.
+
+### `InitOptions`
+
+| Option | Description |
+| --- | --- |
+| `renderer` | Only `'sw'`. Other values throw |
+| `onError` | Receives errors instead of throwing them. See [Errors](#errors) |
+| `threads` | ThorVG thread count. Defaults to `0`. See [Threads](./guides/threads#engine-threads) |
+| `locateFile` | Ignored |
+
+## `ThorVG`
+
+The namespace returned by `init()`. It is the WebCanvas namespace without `Video`. `TVG.Canvas` is the [Node.js canvas](#tvgcanvas).
+
+| Member | Reference |
+| --- | --- |
+| `Shape`, `Scene`, `Picture`, `Text` | [Shape](https://thorvg.github.io/thorvg.web/classes/Shape.html), [Scene](https://thorvg.github.io/thorvg.web/classes/Scene.html), [Picture](https://thorvg.github.io/thorvg.web/classes/Picture.html), [Text](https://thorvg.github.io/thorvg.web/classes/Text.html) |
+| `Animation`, `LottieAnimation` | [Animation](https://thorvg.github.io/thorvg.web/classes/Animation.html), [LottieAnimation](https://thorvg.github.io/thorvg.web/classes/LottieAnimation.html) |
+| `LinearGradient`, `RadialGradient`, `ConicGradient` | [LinearGradient](https://thorvg.github.io/thorvg.web/classes/LinearGradient.html), [RadialGradient](https://thorvg.github.io/thorvg.web/classes/RadialGradient.html), [ConicGradient](https://thorvg.github.io/thorvg.web/classes/ConicGradient.html) |
+| `Font`, `Accessor`, `Paint` | [Font](https://thorvg.github.io/thorvg.web/classes/Font.html), [Accessor](https://thorvg.github.io/thorvg.web/classes/Accessor.html), [Paint](https://thorvg.github.io/thorvg.web/classes/Paint.html) |
+| `BlendMethod`, `MaskMethod`, `StrokeCap`, `StrokeJoin`, `FillRule`, `PathCommand`, `GradientSpread`, `SceneEffect`, `TextWrapMode`, `ColorSpace`, `FilterMethod`, `EngineOption` | [Enums](https://thorvg.github.io/thorvg.web/) |
+| `Canvas` | [`TVG.Canvas`](#tvgcanvas) |
+| `version` | ThorVG engine version |
+| `term()` | Resets the initialization |
+
+The classes are also exported from the package, so `import { Shape } from 'thorvg-canvas'` works after `init()`.
+
+## `TVG.Canvas`
+
+```ts
+const canvas = new TVG.Canvas({ width: 600, height: 400 });
+```
+
+The WebCanvas [`Canvas`](https://thorvg.github.io/thorvg.web/classes/Canvas.html) class, rendering into memory. See [Canvas](./guides/canvas).
+
+| Option | Description |
+| --- | --- |
+| `width`, `height` | Drawing size. Default 800 × 600 |
+| `pixelRatio` | Output scale. Default `1` |
+| `engineOption` | `TVG.EngineOption` value for the engine |
+| `enableDevicePixelRatio` | Ignored. Use `pixelRatio` |
+
+### Added members
+
+| Member | Description |
+| --- | --- |
+| `renderAsync()` | Renders on the libuv thread pool. See [Threads](./guides/threads) |
+| `toFile(path, format?)`, `toFileSync(path, format?)` | Saves the last rendered frame. See [Output](./guides/output#files) |
+| `toBuffer(format?)`, `toBufferSync(format?)` | Encodes the last rendered frame. See [Output](./guides/output#buffers) |
+| `getImageData()` | A copy of the last rendered frame as RGBA. See [Output](./guides/output#pixels) |
+| `width`, `height` | Output size in pixels |
+| `[Symbol.dispose]()` | Calls `destroy()`, for `using` |
+
+`format` is `'png'` or `'raw'`.
+
+## Errors
+
+ThorVG calls that fail throw a [`ThorVGError`](https://thorvg.github.io/thorvg.web/classes/ThorVGError.html) with a [`ThorVGResultCode`](https://thorvg.github.io/thorvg.web/enums/ThorVGResultCode.html). With `onError`, the error is passed to the handler instead:
+
+```ts
+const TVG = await init({
+  onError: (error, context) => console.warn(context.operation, error.message),
+});
+```
+
+`ThorVGError` and `ThorVGResultCode` are exported from the package.
+
+## Types
+
+The package re-exports the WebCanvas types, so you can import them from `thorvg-canvas`:
+
+```ts
+import type { Canvas, Shape, Picture, LottieAnimation, ColorStop } from 'thorvg-canvas';
+```
+
+It also exports `ThorVGNamespace`, `NodeCanvasOptions`, `ImageFormat` and `RawImage`.

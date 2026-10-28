@@ -1,0 +1,45 @@
+---
+title: Text and fonts
+sidebar_position: 5
+---
+
+`TVG.Text` draws text with a loaded font. A small built-in font named `default` is always available:
+
+```ts
+const text = new TVG.Text();
+text.font('default').fontSize(24).text('Hello ThorVG').fill(255, 255, 255);
+text.translate(20, 40);
+canvas.add(text);
+```
+
+The built-in font covers Latin letters, digits and a few symbols. Load a font for other characters.
+
+## Loading fonts
+
+Load TrueType or OpenType data with `Font.load(name, data)` and refer to the font by its name:
+
+```ts
+import { readFileSync } from 'node:fs';
+
+TVG.Font.load('Inter', readFileSync('Inter.ttf'), { type: 'ttf' });
+
+text.font('Inter');
+```
+
+`Font.unload(name)` removes a loaded font. A loaded font is available to every canvas.
+
+## Font providers
+
+`Font.load(name)` without data asks a font provider for the font. There is no default provider in Node.js, so set one with `Font.provider()`:
+
+```ts
+import { readFile } from 'node:fs/promises';
+
+TVG.Font.provider({
+  async fetch(name) {
+    return { data: await readFile(`fonts/${name}.ttf`), type: 'ttf' };
+  },
+});
+
+await TVG.Font.load('Inter');
+```

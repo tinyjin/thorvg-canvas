@@ -1,0 +1,42 @@
+---
+title: Platforms
+sidebar_position: 4
+---
+
+## Supported platforms
+
+The package includes a prebuilt binary for each platform below. It needs Node.js 20 or later.
+
+| OS | Architectures | Requirements |
+| --- | --- | --- |
+| macOS | arm64, x64 | macOS 11+ |
+| Linux (glibc) | x64, arm64 | glibc 2.28+, such as Debian 10+, Ubuntu 20.04+, RHEL 8+ and Amazon Linux 2023 |
+| Linux (musl) | x64, arm64 | Alpine Linux |
+| Windows | x64, arm64 | |
+
+The binaries link only to the system C library, without additional libraries. The package also works in minimal containers such as `node:alpine`.
+
+## Building from source
+
+On other platforms, or to change ThorVG, build the package from the repository. It needs meson, ninja and a C++17 toolchain:
+
+```sh
+git clone --recursive https://github.com/tinyjin/thorvg-canvas.git
+cd thorvg-canvas && yarn
+yarn build
+```
+
+`yarn build` builds ThorVG, the native addon and the TypeScript sources. A local build is used instead of the prebuilt binary when present.
+
+## Differences from WebCanvas
+
+| Feature | thorvg-canvas |
+| --- | --- |
+| Renderers | `'sw'` only |
+| `TVG.Canvas` target | Ignored. The canvas renders into memory |
+| `enableDevicePixelRatio` | Ignored. Use `pixelRatio` |
+| `TVG.Video` | Not available |
+| `Font.load(name)` with the default provider | Needs `Font.provider()` |
+| Lottie audio playback | Events through `resolver()` only |
+| `play()` | Runs on a 60 Hz timer. Use `frame(n)` for files |
+| `locateFile` | Ignored |
