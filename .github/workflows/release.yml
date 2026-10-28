@@ -47,6 +47,8 @@ jobs:
       id-token: write # OIDC token for npm Trusted Publishing (and provenance)
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - uses: actions/setup-node@v4
         with:
@@ -85,6 +87,7 @@ jobs:
             mkdir -p "prebuilds/$target"
             cp "$file" "prebuilds/$target/thorvg.node"
           done
+          cp thorvg/LICENSE prebuilds/LICENSE
 
       - run: corepack enable && yarn workspaces focus thorvg-canvas
 

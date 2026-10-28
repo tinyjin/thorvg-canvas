@@ -17,6 +17,7 @@ export const TARGETS = [
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const missing = [];
+if (!existsSync(join(root, 'prebuilds', 'LICENSE'))) missing.push('LICENSE');
 for (const target of TARGETS) {
   const binary = join(root, 'prebuilds', target, 'thorvg.node');
   if (existsSync(binary)) {
