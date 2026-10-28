@@ -6,3 +6,4 @@ dist/
 deps/
 prebuilds/
 test/visual/output/
+examples/*.png
