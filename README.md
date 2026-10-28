@@ -1,5 +1,7 @@
 # ThorVG for Node.js
 
+[![npm](https://img.shields.io/npm/v/thorvg-canvas)](https://www.npmjs.com/package/thorvg-canvas)
+
 Headless vector graphics and Lottie rendering powered by [ThorVG](https://github.com/thorvg/thorvg).
 
 **[Documentation](https://tinyjin.github.io/thorvg-canvas/)**

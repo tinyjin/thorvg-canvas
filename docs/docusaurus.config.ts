@@ -109,7 +109,6 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © 2026 ThorVG Project`,
     },
     prism: {
       theme: prismThemes.github,
