@@ -3,6 +3,7 @@
 [![npm](https://img.shields.io/npm/v/thorvg-canvas)](https://www.npmjs.com/package/thorvg-canvas)
 [![minzipped size](https://img.shields.io/bundlephobia/minzip/thorvg-canvas)](https://bundlephobia.com/package/thorvg-canvas)
 [![CI](https://github.com/tinyjin/thorvg-canvas/actions/workflows/ci.yml/badge.svg)](https://github.com/tinyjin/thorvg-canvas/actions/workflows/ci.yml)
+[![Ask DeepWiki](https://img.shields.io/badge/Ask-DeepWiki-blue)](https://deepwiki.com/tinyjin/thorvg-canvas)
 
 Headless vector graphics and Lottie rendering powered by [ThorVG](https://github.com/thorvg/thorvg).
 
