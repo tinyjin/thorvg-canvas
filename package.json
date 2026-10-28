@@ -1,7 +1,7 @@
 {
   "name": "thorvg-canvas",
   "version": "0.1.0",
-  "description": "Headless vector graphics and Lottie rendering for Node.js.",
+  "description": "Headless vector graphics and Lottie rendering for Node.js",
   "keywords": [
     "node",
     "headless",
@@ -18,7 +18,7 @@
     "type": "git",
     "url": "git+https://github.com/tinyjin/thorvg-canvas.git"
   },
-  "homepage": "https://tinyjin.github.io/thorvg-canvas/",
+  "homepage": "https://tinyjin.github.io/thorvg-canvas",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
