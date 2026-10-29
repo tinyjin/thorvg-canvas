@@ -1,21 +1,15 @@
 // Run on prepack: refuses to publish unless every supported platform's binary is
 // in prebuilds/. CI collects them there from the per-platform build jobs.
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const TARGETS = [
-  'darwin-arm64',
-  'darwin-x64',
-  'linux-arm64-gnu',
-  'linux-arm64-musl',
-  'linux-x64-gnu',
-  'linux-x64-musl',
-  'win32-arm64',
-  'win32-x64',
-];
-
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+// The supported platforms are the ones the addon loader requires.
+const addon = readFileSync(join(root, 'src', 'native', 'addon.ts'), 'utf8');
+const TARGETS = [...addon.matchAll(/'\.\.\/prebuilds\/([\w-]+)\/thorvg\.node'/g)].map((match) => match[1]);
+
 const missing = [];
 if (!existsSync(join(root, 'prebuilds', 'LICENSE'))) missing.push('LICENSE');
 for (const target of TARGETS) {
