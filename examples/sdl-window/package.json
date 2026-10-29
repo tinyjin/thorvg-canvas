@@ -1,0 +1,15 @@
+{
+  "name": "thorvg-canvas-sdl-window",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node main.mjs"
+  },
+  "dependencies": {
+    "@kmamal/sdl": "1.0.0-5",
+    "thorvg-canvas": "^0.1.0"
+  },
+  "allowScripts": {
+    "@kmamal/sdl@1.0.0-5": true
+  }
+}

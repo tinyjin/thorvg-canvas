@@ -8,3 +8,50 @@ import Examples from '@site/src/components/Examples';
 Each example is a complete script. The images on this page are the files they save, rendered by `thorvg-canvas` when this site is built. The sources and their assets are in [`examples/`](https://github.com/tinyjin/thorvg-canvas/tree/main/examples).
 
 <Examples />
+
+## Desktop window
+
+`thorvg-canvas` is another way to build native applications. With SDL3, a Node.js script becomes a desktop app on macOS, Windows and Linux.
+
+```sh
+npm install thorvg-canvas @kmamal/sdl@next
+```
+
+```js
+import { setTimeout as sleep } from 'node:timers/promises';
+import sdl from '@kmamal/sdl';
+import { init } from 'thorvg-canvas';
+
+const TVG = await init();
+const window = sdl.video.createWindow({ title: 'ThorVG', width: 640, height: 480 });
+const canvas = new TVG.Canvas({
+  width: 640,
+  height: 480,
+  pixelRatio: window.pixelWidth / window.width,
+});
+
+const dot = new TVG.Shape();
+canvas.add(dot);
+
+let pointer = { x: 320, y: 240 };
+window.on('mouseMove', ({ x, y }) => {
+  pointer = { x, y };
+});
+
+while (!window.destroyed) {
+  dot.reset().appendCircle(pointer.x, pointer.y, 24, 24).fill(59, 130, 246);
+  await canvas.update().renderAsync();
+  if (window.destroyed) break;
+
+  const { data } = canvas.getImageData();
+  const pixels = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+  window.render(canvas.width, canvas.height, canvas.width * 4, 'rgba32', pixels);
+  await sleep(16);
+}
+
+canvas.destroy();
+```
+
+[`examples/sdl-window`](https://github.com/tinyjin/thorvg-canvas/tree/main/examples/sdl-window) builds a small sketch app on this loop, with a toolbar, color swatches, brush size, undo and redo, all drawn by ThorVG:
+
+![Sketch app in an SDL window](/img/sdl-window.png)
