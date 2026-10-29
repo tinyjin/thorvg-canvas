@@ -36,7 +36,7 @@
       "conditions": [
         ["OS=='linux'", {
           "libraries": ["-lpthread"],
-          "ldflags": ["-static-libstdc++", "-static-libgcc"]
+          "ldflags": ["-static-libstdc++", "-static-libgcc", "-s"]
         }]
       ]
     }
