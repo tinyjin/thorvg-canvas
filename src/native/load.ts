@@ -16,10 +16,6 @@ export function target(): string {
   return `${process.platform}-${process.arch}${libc()}`;
 }
 
-// Every platform's binary ships inside this one package under
-// prebuilds/<target>/ (each is well under 1 MB gzipped), so installing needs
-// no compiler, no install script and no network. A local node-gyp build wins
-// when present, for development.
 export function loadNative(): ThorVGNative {
   const root = join(dirname(fileURLToPath(import.meta.url)), '..');
   const candidates = [
