@@ -425,6 +425,28 @@ export interface TextOutline {
 }
 
 /**
+ * @category Text
+ * @beta
+ */
+export interface TextMetrics {
+    ascent: number;
+    descent: number;
+    linegap: number;
+    advance: number;
+}
+
+/**
+ * @category Text
+ * @beta
+ */
+export interface GlyphMetrics {
+    advance: number;
+    bearing: number;
+    min: { x: number; y: number };
+    max: { x: number; y: number };
+}
+
+/**
  * Font provider abstraction for pluggable font sources.
  * @category Font
  */

@@ -539,6 +539,25 @@ void installText(Builder& b) {
     return result(info.Env(), tvg_text_set_text(arg<Tvg_Paint>(info, 0), content.c_str()));
   });
 
+  b.fn("tvg_text_get_text_metrics", [](Info info) {
+    auto out = bytes(info[1]);
+    if (out.size < sizeof(Tvg_Text_Metrics)) return result(info.Env(), TVG_RESULT_INVALID_ARGUMENT);
+    Tvg_Text_Metrics metrics{};
+    auto res = tvg_text_get_text_metrics(arg<Tvg_Paint>(info, 0), &metrics);
+    std::memcpy(const_cast<uint8_t*>(out.data), &metrics, sizeof(metrics));
+    return result(info.Env(), res);
+  });
+
+  b.fn("tvg_text_get_glyph_metrics", [](Info info) {
+    auto ch = text(info[1]);
+    auto out = bytes(info[2]);
+    if (out.size < sizeof(Tvg_Glyph_Metrics)) return result(info.Env(), TVG_RESULT_INVALID_ARGUMENT);
+    Tvg_Glyph_Metrics metrics{};
+    auto res = tvg_text_get_glyph_metrics(arg<Tvg_Paint>(info, 0), ch.c_str(), &metrics, nullptr);
+    std::memcpy(const_cast<uint8_t*>(out.data), &metrics, sizeof(metrics));
+    return result(info.Env(), res);
+  });
+
   b.fn("tvg_font_load_data", [](Info info) {
     auto name = text(info[0]);
     if (!info[1].IsObject()) return result(info.Env(), tvg_font_load_data(name.c_str(), nullptr, 0, nullptr, false));

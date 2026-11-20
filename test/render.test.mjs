@@ -147,3 +147,20 @@ test('the default font is available without Font.load()', () => {
   assert.ok(inked > 100, `expected glyph pixels, got ${inked}`);
   canvas.destroy();
 });
+
+test('Text.metrics() reports font and glyph metrics', () => {
+  const text = new TVG.Text().font('default').fontSize(24).text('ThorVG');
+
+  const font = text.metrics();
+  assert.ok(font.ascent > 0, `ascent ${font.ascent}`);
+  assert.ok(font.advance > 0, `advance ${font.advance}`);
+  assert.ok(Math.abs(font.advance - (font.ascent - font.descent + font.linegap)) < 1e-3);
+
+  const wide = text.metrics('W');
+  const narrow = text.metrics('i');
+  assert.ok(wide.advance > narrow.advance, `W ${wide.advance} <= i ${narrow.advance}`);
+  assert.ok(wide.max.x > wide.min.x && wide.max.y > wide.min.y);
+
+  const bigger = new TVG.Text().font('default').fontSize(48).metrics('W');
+  assert.ok(Math.abs(bigger.advance - wide.advance * 2) < 0.5, `48px ${bigger.advance} vs 24px ${wide.advance}`);
+});

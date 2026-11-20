@@ -100,6 +100,7 @@ export type {
   FontProvider,
   FontProviderResult,
   FontType,
+  GlyphMetrics,
   InitOptions,
   LoadDataOptions,
   LoadFontOptions,
@@ -112,5 +113,6 @@ export type {
   RendererType,
   StrokeOptions,
   TextLayout,
+  TextMetrics,
   TextOutline,
 } from '@thorvg/webcanvas';
