@@ -497,8 +497,8 @@ void installPicture(Builder& b) {
   b.fn("tvg_picture_set_asset_resolver", [](Info info) {
     auto picture = arg<Tvg_Paint>(info, 0);
     auto id = arg<intptr_t>(info, 1);
-    auto res = id ? tvg_picture_set_asset_resolver(picture, assetResolver, reinterpret_cast<void*>(id))
-                  : tvg_picture_set_asset_resolver(picture, nullptr, nullptr);
+    auto res = id ? tvg_picture_set_asset_resolver(picture, assetResolver, reinterpret_cast<void*>(id), true)
+                  : tvg_picture_set_asset_resolver(picture, nullptr, nullptr, true);
     return result(info.Env(), res);
   });
 }
